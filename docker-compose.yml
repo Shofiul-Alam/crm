@@ -1,0 +1,165 @@
+# For more information: https://laravel.com/docs/sail
+version: '3'
+services:
+  crm.laravel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: fpm_server
+      args:
+        WWWGROUP: '${ROOTGROUP}'
+        XDEBUG_MODE: 'True'
+    image: crm.laravel
+    container_name: crm.laravel
+    command:
+      - /bin/bash
+      - -c
+      - start-container
+    ports:
+      - "8000:80"
+    environment:
+      WWWUSER: '${ROOTUSER}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - '.:/opt/apps/laravel-in-kubernetes/'
+      - './docker/fpm/php.ini:/usr/local/etc/php/conf.d/docker-php-laravel.ini'
+      - './docker/fpm/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-xdebug.ini'
+      - './docker/fpm/fpm-supervisord-local.conf:/etc/supervisor/conf.d/supervisord.conf'
+    networks:
+      crm:
+        aliases:
+          - crm.laravel
+    depends_on:
+      - crm.mysql
+      - crm.redis
+  crm.worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cli
+      args:
+        WWWGROUP: '${WWWGROUP}'
+    image: crm.worker
+    container_name: crm.worker
+    command:
+    - /bin/bash
+    - -c
+    - supervisord -c /etc/supervisor/conf.d/laravel-worker.conf && supervisorctl  start all
+    ports:
+      - "6002:6001"
+    environment:
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - '.:/opt/apps/laravel-in-kubernetes/'
+      - './docker/fpm/php.ini:/usr/local/etc/php/conf.d/docker-php-laravel.ini'
+      - './docker/queue/laravel-worker.conf:/etc/supervisor/conf.d/laravel-worker.conf'
+    networks:
+      crm:
+        aliases:
+          - crm.worker
+    depends_on:
+      - crm.laravel
+      - crm.mysql
+      - crm.redis
+  crm.cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cron
+      args:
+        WWWGROUP: '${WWWGROUP}'
+    image: crm.cron
+    container_name: crm.cron
+    environment:
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - '.:/opt/apps/laravel-in-kubernetes/'
+      - './docker/fpm/php.ini:/usr/local/etc/php/conf.d/docker-php-laravel.ini'
+    networks:
+      crm:
+        aliases:
+          - crm.cron
+    depends_on:
+      - crm.web
+      - crm.mysql
+      - crm.redis
+  crm.web:
+    container_name: crm.web
+    image: nginx:latest
+    volumes:
+      - './docker/nginx/nginx.template.conf:/etc/nginx/nginx.conf'
+      - './docker/nginx/index.html:/opt/apps/laravel-in-kubernetes/index.html'
+      - ./docker/nginx/error.log:/etc/nginx/error_log.log
+      - ./docker/nginx/cache/:/etc/nginx/cache
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/certbot/conf:/etc/nginx/ssl
+      - ./docker/nginx/certbot/data:/var/www/certbot
+    ports:
+      - 8181:80
+    networks:
+      crm:
+        aliases:
+          - crm.web
+    depends_on:
+      - crm.laravel
+      - crm.worker
+  crm.mysql:
+    image: 'mysql:8.0'
+    container_name: 'crm.mysql'
+    ports:
+      - '${FORWARD_DB_PORT:-3308}:3306'
+    environment:
+      UPLOAD_LIMIT: 1G
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      - 'crm_mysql_data:/var/lib/mysql'
+      - './docker/8.0/mysql.conf/app.cnf:/etc/mysql/conf.d/crm.cnf'
+    command: --sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    networks:
+      - crm
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+  crm.mongo:
+    image: mongo
+    container_name: crm.mongo
+    restart: always
+    ports:
+      - '${FORWARD_MONGO_PORT:-27019}:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: '${MONGO_DB_ROOT_USERNAME}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGO_DB_ROOT_PASSWORD}'
+      MONGO_INITDB_USERNAME: '${MONGO_DB_USERNAME}'
+      MONGO_INITDB_PASSWORD: '${MONGO_DB_PASSWORD}'
+      MONGO_INITDB_DATABASE: '${MONGO_DB_DATABASE}'
+    volumes:
+      - 'crm_mongo_data:/data/db'
+      - './docker/mongo/conf/mongod.conf:/etc/mongod.conf'
+      - './docker/mongo/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh'
+    networks:
+      - crm
+  crm.redis:
+    image: 'redis:alpine'
+    container_name: 'crm.redis'
+    ports:
+      - '${FORWARD_REDIS_PORT:-6380}:6379'
+    volumes:
+      - 'crm_redis_data:/data'
+    networks:
+      - crm
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+networks:
+  crm:
+    driver: bridge
+volumes:
+  crm_mysql_data:
+    driver: local
+  crm_mongo_data:
+    driver: local
+  crm_redis_data:
+    driver: local
