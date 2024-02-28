@@ -1,0 +1,35 @@
+.p-input-icon-left,
+.p-input-icon-right {
+    position: relative;
+}
+
+.p-input-icon-left > i,
+.p-input-icon-left > svg,
+.p-input-icon-right > i,
+.p-input-icon-right > svg {
+    position: absolute;
+    top: 50%;
+    margin-top: -0.5rem;
+}
+.p-fluid .p-input-icon-left,
+.p-fluid .p-input-icon-right {
+    width: 100%;
+}
+.p-input-icon-left > svg:first-of-type,
+.p-input-icon-left > i:first-of-type {
+    left: 0.75rem;
+    color: #94a3b8;
+}
+
+.p-input-icon-left > .p-inputtext {
+    padding-left: 2.5rem;
+}
+
+.p-input-icon-left.p-float-label > label {
+    left: 2.5rem;
+}
+.p-input-icon-right > svg:last-of-type,
+.p-input-icon-right > i:last-of-type {
+    right: 0.75rem;
+    color: #94a3b8;
+}

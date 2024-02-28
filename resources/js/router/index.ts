@@ -5,7 +5,13 @@ const routes: Array<RouteRecordRaw>  = [
     {
         path: '/',
         name: 'app-home',
-        component: AppHome
+        component: AppHome,
+        meta:{
+            title: 'Dashboard',
+            breadcrumb: [
+                {label: 'Dashboard', routeName: 'app-home'}, {label: 'Dashboard'}
+            ]
+        }
     },
 ];
 

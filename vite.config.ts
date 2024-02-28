@@ -19,10 +19,23 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    optimizeDeps: {
+        include: ['lodash', 'moment']
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname + '/resources/js'),
             vue: "vue/dist/vue.esm-bundler.js"
         }
-    }
+    },
+    rollupOptions: {
+        output: {
+            manualChunks: (id) => {
+                console.log(id);
+                if (id.includes('modules/orders')) {
+                    return 'orders';
+                }
+            },
+        },
+    },
 });

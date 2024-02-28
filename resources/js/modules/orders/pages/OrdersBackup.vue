@@ -1,0 +1,273 @@
+<template>
+    <div class="card">
+        <div class=" flex pb-3">
+            <Button class="mr-5" type="button" icon="pi pi-plus" label="Add New Order" @click="toggle" />
+
+            <OverlayPanel ref="op" v-if="false">
+                <div class="flex flex-column gap-3 w-25rem p-3">
+                    <p style="font-size: 1.5rem">Create Order</p>
+                    <Dropdown v-model="selectedCountry" :options="countries" filter optionLabel="name" placeholder="Select a Customer" class="w-full" />
+                    <Calendar v-model="newOrder.date" showIcon iconDisplay="input" inputId="icondisplay" placeholder="Order Date" date-format="D d/m/y" />
+                    <Button type="button" label="Create Order" class="w-full" />
+                </div>
+            </OverlayPanel>
+            <span class=" flex relative align-items-center w-8rem cursor-pointer ">
+                <Tag class="pl-5 w-8rem" :value="'proposal'" :severity="'success'" @click="toggle"/>
+                <InputIcon class="pi pi-spin pi-spinner absolute" v-if="false"> </InputIcon>
+                <InputIcon class="pi pi-check-circle absolute" style="left:2px" v-if="false"> </InputIcon>
+                <InputIcon class="pi pi-cog  absolute " style="left:8px" @click="toggle"> </InputIcon>
+            </span>
+            <OverlayPanel ref="op" :style="{padding: 0}" :pt="{content:{style:{padding:0}}}">
+                <div class="flex flex-column gap-3 w-7rem">
+                    <Menu style="min-width:6rem"
+                     :pt="{menuitem:{class:'w-full'}, menu:{style:{minWidth:'6rem!important', padding:'5px'}}}"
+                    :model="[
+                     {label: 'unqualified', severity: 'danger'},
+                     {label: 'qualified', severity: 'success'},
+                     {label: 'new', severity: 'info'},
+                     {label: 'negotiation', severity: 'warning'},
+                     {label: 'renewal', severity: 'info'},
+                     {label: 'proposal', severity: null},
+                    ]">
+                        <template #item="{ item, props }">
+                            <a v-ripple class="flex align-items-center w-full" style="padding:2px 0" v-bind="props.action">
+                                <Tag  class="w-full" :value="item.label" :severity="item.severity" />
+                            </a>
+                        </template>
+                    </Menu>
+                </div>
+            </OverlayPanel>
+        </div>
+        <DataTable v-model:filters="filters" :value="customers" paginator showGridlines :rows="10" dataKey="id"
+                   filterDisplay="menu" :loading="loading" :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']">
+            <template #header>
+                <div class="flex justify-content-between">
+                    <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
+                    <IconField iconPosition="left">
+                        <InputIcon>
+                            <i class="pi pi-search" />
+                        </InputIcon>
+                        <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                    </IconField>
+                </div>
+            </template>
+            <template #empty> No customers found. </template>
+            <template #loading> Loading customers data. Please wait. </template>
+            <Column field="name" header="Name" style="min-width: 12rem">
+                <template #body="{ data }">
+                    {{ data.name }}
+                </template>
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by name" />
+                </template>
+            </Column>
+            <Column header="Country" filterField="country.name" style="min-width: 12rem">
+                <template #body="{ data }">
+                    <div class="flex align-items-center gap-2">
+                        <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${data.country.code}`" style="width: 24px" />
+                        <span>{{ data.country.name }}</span>
+                    </div>
+                </template>
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" class="p-column-filter" placeholder="Search by country" />
+                </template>
+                <template #filterclear="{ filterCallback }">
+                    <Button type="button" icon="pi pi-times" @click="filterCallback()" severity="secondary"></Button>
+                </template>
+                <template #filterapply="{ filterCallback }">
+                    <Button type="button" icon="pi pi-check" @click="filterCallback()" severity="success"></Button>
+                </template>
+                <template #filterfooter>
+                    <div class="px-3 pt-0 pb-3 text-center">Customized Buttons</div>
+                </template>
+            </Column>
+            <Column header="Agent" filterField="representative" :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+                <template #body="{ data }">
+                    <div class="flex align-items-center gap-2">
+                        <img :alt="data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`" style="width: 32px" />
+                        <span>{{ data.representative.name }}</span>
+                    </div>
+                </template>
+                <template #filter="{ filterModel }">
+                    <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any" class="p-column-filter">
+                        <template #option="slotProps">
+                            <div class="flex align-items-center gap-2">
+                                <img :alt="slotProps.option.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`" style="width: 32px" />
+                                <span>{{ slotProps.option.name }}</span>
+                            </div>
+                        </template>
+                    </MultiSelect>
+                </template>
+            </Column>
+            <Column header="Date" filterField="date" dataType="date" style="min-width: 10rem">
+                <template #body="{ data }">
+                    {{ formatDate(data.date) }}
+                </template>
+                <template #filter="{ filterModel }">
+                    <Calendar v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />
+                </template>
+            </Column>
+            <Column header="Balance" filterField="balance" dataType="numeric" style="min-width: 10rem">
+                <template #body="{ data }">
+                    {{ formatCurrency(data.balance) }}
+                </template>
+                <template #filter="{ filterModel }">
+                    <InputNumber v-model="filterModel.value" mode="currency" currency="USD" locale="en-US" />
+                </template>
+            </Column>
+            <Column header="Status" field="status" :filterMenuStyle="{ width: '14rem' }" style="min-width: 12rem">
+                <template #body="{ data }">
+                    <Tag :value="data.status" :severity="getSeverity(data.status)" />
+                </template>
+                <template #filter="{ filterModel }">
+                    <Dropdown v-model="filterModel.value" :options="statuses" placeholder="Select One" class="p-column-filter" showClear>
+                        <template #option="slotProps">
+                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                        </template>
+                    </Dropdown>
+                </template>
+            </Column>
+            <Column field="activity" header="Activity" :showFilterMatchModes="false" style="min-width: 12rem">
+                <template #body="{ data }">
+                    <ProgressBar :value="data.activity" :showValue="false" style="height: 6px"></ProgressBar>
+                </template>
+                <template #filter="{ filterModel }">
+                    <Slider v-model="filterModel.value" range class="m-3"></Slider>
+                    <div class="flex align-items-center justify-content-between px-2">
+                        <span>{{ filterModel.value ? filterModel.value[0] : 0 }}</span>
+                        <span>{{ filterModel.value ? filterModel.value[1] : 100 }}</span>
+                    </div>
+                </template>
+            </Column>
+            <Column field="verified" header="Verified" dataType="boolean" bodyClass="text-center" style="min-width: 8rem">
+                <template #body="{ data }">
+                    <i class="pi" :class="{ 'pi-check-circle text-green-500 ': data.verified, 'pi-times-circle text-red-500': !data.verified }"></i>
+                </template>
+                <template #filter="{ filterModel }">
+                    <label for="verified-filter" class="font-bold"> Verified </label>
+                    <TriStateCheckbox v-model="filterModel.value" inputId="verified-filter" />
+                </template>
+            </Column>
+        </DataTable>
+    </div>
+</template>
+
+<script>
+import { CustomerService } from '../services/CustomerService';
+import { FilterMatchMode, FilterOperator } from 'primevue/api';
+import {ref} from "vue";
+import {NowAsDateObject} from "@/share/utils/DateTimeUtils.ts";
+
+export default {
+    data() {
+        return {
+            customers: null,
+            filters: null,
+            selectedCountry: null,
+            newOrder: {
+                date: NowAsDateObject()
+            },
+            countries:[
+                { name: 'Australia', code: 'AU' },
+                { name: 'Brazil', code: 'BR' },
+                { name: 'China', code: 'CN' },
+                { name: 'Egypt', code: 'EG' },
+                { name: 'France', code: 'FR' },
+                { name: 'Germany', code: 'DE' },
+                { name: 'India', code: 'IN' },
+                { name: 'Japan', code: 'JP' },
+                { name: 'Spain', code: 'ES' },
+                { name: 'United States', code: 'US' }
+            ],
+            representatives: [
+                { name: 'Amy Elsner', value: 'amyelsner.png' },
+                { name: 'Anna Fali', value: 'annafali.png' },
+                { name: 'Asiya Javayant', value: 'asiyajavayant.png' },
+                { name: 'Bernardo Dominic', value: 'bernardodominic.png' },
+                { name: 'Elwin Sharvill', value: 'elwinsharvill.png' },
+                { name: 'Ioni Bowcher', value: 'ionibowcher.png' },
+                { name: 'Ivan Magalhaes', value: 'ivanmagalhaes.png' },
+                { name: 'Onyama Limba', value: 'onyamalimba.png' },
+                { name: 'Stephen Shaw', value: 'stephenshaw.png' },
+                { name: 'XuXue Feng', value: 'xuxuefeng.png' }
+            ],
+            statuses: ['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal'],
+            loading: true
+        };
+    },
+    created() {
+        this.initFilters();
+    },
+    mounted() {
+        CustomerService.getCustomersMedium().then((data) => {
+            this.customers = this.getCustomers(data);
+            this.loading = false;
+        });
+    },
+    methods: {
+        formatDate(value) {
+            return value.toLocaleDateString('en-US', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        },
+        formatCurrency(value) {
+            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        },
+        clearFilter() {
+            this.initFilters();
+        },
+        initFilters() {
+            this.filters = {
+                global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+                name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+                'country.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+                representative: { value: null, matchMode: FilterMatchMode.IN },
+                date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+                balance: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+                status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+                activity: { value: [0, 100], matchMode: FilterMatchMode.BETWEEN },
+                verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+            };
+        },
+        getCustomers(data) {
+            return [...(data || [])].map((d) => {
+                d.date = new Date(d.date);
+
+                return d;
+            });
+        },
+        getSeverity(status) {
+            switch (status) {
+                case 'unqualified':
+                    return 'danger';
+
+                case 'qualified':
+                    return 'success';
+
+                case 'new':
+                    return 'info';
+
+                case 'negotiation':
+                    return 'warning';
+
+                case 'renewal':
+                    return null;
+            }
+        },
+        toggle(event) {
+            this.$refs.op.toggle(event);
+        }
+    }
+};
+</script>
+
+<style lang="scss">
+.p-tag .p-menuitem-content a.p-menuitem-link {
+    padding: 0.1rem;
+}
+.p-tieredmenu{
+
+}
+</style>

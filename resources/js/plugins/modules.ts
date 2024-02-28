@@ -25,6 +25,7 @@ export default {
             // module routes
             addBaseRoute(router, module);
             addRoute(router, module);
+            addComponents(app, module);
         }
 
         for (const service of services) {
@@ -68,5 +69,13 @@ const addRoute = (router: Router, module: ModuleDeclaration): void => {
             // add Routes
             router.addRoute(route);
         }
+    }
+}
+const addComponents = (app: App, module: ModuleDeclaration): void => {
+    if (!module.components) return;
+
+    for (const component of module.components) {
+        // add Module components
+        app.component(component.name, component)
     }
 }

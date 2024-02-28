@@ -1,0 +1,20 @@
+.layout-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    transition: margin-left .4s cubic-bezier(.05,.74,.2,.99);
+}
+
+.layout-content {
+    padding: .4rem;
+    padding-top: 6rem;
+    flex: 1 1 auto;
+}
+
+@media screen and (max-width: $breakpoint - 1) {
+    .layout-content {
+        padding: .4rem;
+        padding-top: 6rem;
+    }
+}

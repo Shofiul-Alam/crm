@@ -16,3 +16,25 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('dashboard');
 });
+
+Route::get('/orders', function () {
+    return view('dashboard');
+});
+Route::get('/orders/view/{id}', function () {
+    return view('dashboard');
+});
+Route::get('/orders/view/{id}/invoice', function () {
+    return view('dashboard');
+});
+Route::get('/orders/create', function () {
+    return view('dashboard');
+});
+Route::get('/products', function () {
+    return view('dashboard');
+});
+Route::get('/products/view/{id}', function () {
+    return view('dashboard');
+});
+Route::get('/products/add-product', function () {
+    return view('dashboard');
+});

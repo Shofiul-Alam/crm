@@ -1,0 +1,13 @@
+.p-action-button {
+    width: fit-content!important;
+    border: 1px solid var(--surface-200)!important;
+    padding: 0.3rem 0.5rem!important;
+    max-width: 52px;
+}
+.p-action-button {
+    .p-badge-danger{
+        background-color: var(--red-500)!important;
+        color: #fff;
+        line-height: 1.2rem;
+    }
+}

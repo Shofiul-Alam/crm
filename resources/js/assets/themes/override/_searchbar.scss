@@ -1,0 +1,204 @@
+//Searchbar
+.app-searchbar {
+    position: relative;
+    .search-container {
+        background: var(--surface-overlay);
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        position: relative;
+        backface-visibility: hidden;
+        pointer-events: all;
+        border: none;
+        box-shadow:none;
+        padding:0;
+        &:focus-visible{
+            border:none;
+            outline: none;
+        }
+        i {
+            color: var(--text-color-secondary);
+            width: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            position: absolute;
+            top: 50%;
+            margin-top: -0.75rem;
+            margin-left: .5rem;
+        }
+        input{
+            font-size: .8rem;
+            text-indent: 0;
+            width: 400px;
+        }
+    }
+    .p-inputtext {
+        border-radius: 20px;
+        padding-right: 32px;
+        padding-left: 32px;
+        padding-top: 0.35rem;
+        padding-bottom: 0.35rem;
+        width: 145px;
+        transition: width 0.15s ease-out;
+        &.app-searchbar-focus {
+            width: 511px;
+        }
+        box-shadow: $searchBoxShadow;
+    }
+    .app-searchbar-icon {
+        position: absolute;
+        top: 8px;
+        left: 10px;
+    }
+}
+.p-autocomplete-panel.p-component.k-search-suggestions {
+    max-height: calc(min(600px, 85dvh)) !important;
+    .search-loader {
+        display: flex;
+        height: calc(min(600px, 85dvh));
+        align-items: center;
+        justify-content: center;
+    }
+    .p-autocomplete-item-group {
+        padding-top: 0.5rem;
+        padding-bottom: 0.2rem;
+        font-size: 12px;
+        font-weight: normal;
+        &:not(:first-child) {
+            border-top: 1px solid #E2E2E2;
+        }
+    }
+}
+
+.k-search-suggestions {
+    .p-autocomplete-items {
+        &.app-searchbar-initial-suggestions {
+            max-width: calc(min(511px, 100vw));
+            .k-search-context-select {
+                .search-options {
+                    .p-divider {
+                        margin-left: -0.5rem;
+                        .p-button-link {
+                            padding: 0.1rem 0.1rem;
+                        }
+                    }
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    .search-option-group {
+                      display: inline-flex;
+                      flex-wrap: wrap;
+                      max-width: 100%;
+                      gap: 0.5rem;
+                      .p-selectbutton.p-buttonset.k-multiselect-button {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 0.5rem;
+                        .p-button {
+                            margin: 0;
+                            font-size: 10px;
+                            &::before {
+                                width: 5px;
+                            }
+                        }
+                      }
+                    }
+                  }
+                cursor: default;
+                &:hover {
+                    background-color: inherit;
+                }
+                .p-formgroup-inline {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    margin-bottom: -0.5rem;
+                    .p-field {
+                        margin-bottom: 0.5rem;
+                        display: flex;
+                        align-items: center;
+                        .p-checkbox {
+                            vertical-align: middle;
+                            align-items: center;
+                            //height: 1rem;
+                            width: 1rem;
+                            margin-right: 0.2rem;
+                            .p-checkbox-box {
+                                height: 1rem;
+                                width: 1rem;
+                                border-radius: 3px;
+                                .p-checkbox-icon {
+                                    font-size: 0.5rem;
+                                }
+                                &.p-highlight {
+                                    background-color: $primaryColor;
+                                }
+                            }
+                        }
+                        label {
+                            font-size: inherit;
+                            color: inherit;
+                            text-transform: inherit;
+                            font-weight: inherit;
+                        }
+                    }
+                }
+            }
+        }
+        &:not(.app-searchbar-initial-suggestions) {
+            max-width: calc(min(511px, 100vw));
+            .p-autocomplete-item {
+                padding-left: 2rem;
+                i {
+                    color: $textSecondaryColor;
+                }
+                &.k-autocomplete-link {
+                    padding: 0;
+                    a {
+                        width: 100%;
+                        display: inline-flex;
+                        align-items: center;
+                        padding: 0.5rem 1rem 0.5rem 2rem;
+                        text-decoration: none;
+                        span {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: $tabletBreakpoint) {
+    .app-searchbar {
+        .p-autocomplete {
+            .p-inputtext {
+                &.app-searchbar-focus {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: $phoneBreakpoint) {
+    .app-searchbar {
+        flex: 1;
+        .p-autocomplete {
+            .p-inputtext {
+                width: 100%;
+                &.app-searchbar-focus {
+                    width: 100%;
+                }
+            }
+        }
+        .search-container{
+            width: 100%!important;
+            padding: 0 1rem 0 0.5rem;
+            input{
+                width: 100%;
+            }
+        }
+    }
+}

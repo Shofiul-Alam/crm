@@ -1,0 +1,14 @@
+.p-tooltip {
+    .p-tooltip-text{
+        font-size: 12px!important;
+        padding: .3rem .5rem!important;
+    }
+    .bg-danger{
+        background-color: #fff;
+        border:1px solid var(--red-500)!important;
+        color: var(--red-500)!important;
+    }
+    .p-tooltip-arrow.border-danger{
+        border-top-color: var(--red-500)!important;
+    }
+}

@@ -1,0 +1,27 @@
+.p-datatable{
+    .p-datatable-table {
+        .p-column-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .p-datatable-tbody{
+            & > tr{
+                & > td{
+                    padding:0.5rem!important;
+                    .p-inputtext{
+                        border-radius: 0.3rem;
+                        padding: 0.4rem 0.9rem!important;
+                    }
+                    span{
+                        input.p-inputtext{
+                            border-radius: 0.3rem;
+                            padding: 0.4rem 0.9rem!important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

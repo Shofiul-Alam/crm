@@ -1,0 +1,84 @@
+.layout-topbar {
+    padding: 0;
+    .topbar-left {
+        display: flex;
+        align-items: center;
+        min-height: 4rem;
+        padding: 0 1rem 0 0;
+    }
+    .topbar-right {
+        padding: 0.5rem 1rem;
+    }
+    .menu-button {
+        padding: 0 1rem;
+        width: fit-content;
+        min-height: 4rem;
+        line-height: 2.5rem;
+        text-align: center;
+        color: var(--text-color);
+        overflow: hidden;
+        border-radius: 0;
+        background: none;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        outline: 0 none;
+
+        &:hover {
+            background: none;
+        }
+
+        &:focus {
+            box-shadow: none;
+        }
+
+        i {
+            line-height: inherit;
+            font-size: 1.5rem;
+        }
+
+    }
+    .pi-chevron-left:before {
+        content: "\e91d";
+    }
+}
+
+
+@media screen and (min-width: $breakpoint) {
+    .landing-wrapper, .layout-content {
+        width: 100%;
+        padding-top:5.5rem;
+    }
+    .layout-wrapper {
+        &.layout-static-inactive {
+            .layout-topbar {
+                .menu-button {
+                    i:before {
+                        content: "\e91d";
+                    }
+                }
+            }
+        }
+    }
+}
+@media screen and (max-width: $breakpoint - 1) {
+    .layout-topbar {
+        .topbar-left {
+            min-height: 2rem;
+            padding: .5rem 1rem .5rem 0!important;
+        }
+        .topbar-right {
+            padding: 0 1rem 0 .5rem!important;
+        }
+        .menu-button {
+            min-height: 2rem;
+            i:before {
+                content: "\e91d";
+            }
+        }
+        .layout-search .search-container {
+            width: fit-content;
+        }
+    }
+}
+

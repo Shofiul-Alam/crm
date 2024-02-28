@@ -1,40 +1,46 @@
-<script setup>
-import { ref } from 'vue';
-import { useLayout } from '@/layout/composables/layout';
+<template>
+    <div class="layout-search app-searchbar">
+        <transition name="search-container" @enter="onEnter">
+            <div class="search-container" @click="onSearchContainerClick">
+                <i class="pi pi-search"></i>
+                <InputText ref="searchInput" type="text" name="search" placeholder="Search" @keydown="onInputKeydown" />
+            </div>
+        </transition>
+    </div>
+</template>
 
-const { layoutState } = useLayout();
+<script>
+// import Navigation from "./services/Navigation";
+// import {mapState} from "vuex";
 
-const searchInput = ref(null);
+export default {
+    name: "AppSearch",
+    emits: ["search-click", "search-hide"],
 
-const onInputKeydown = (event) => {
-    if (event.key === 'Enter') {
-        layoutState.searchBarActive.value = false;
+    created() {
+        // if(!this.$store.hasModule('nav')){
+        //     this.$store.registerModule('nav', Navigation)
+        // }
+    },
+    methods: {
+        onEnter() {
+            if (this.$refs.searchInput) {
+                this.$refs.searchInput.$el.focus();
+            }
+        },
+        onSearchContainerClick(event) {
+            // this.$store.dispatch('nav/onSearchClick', event);
+            // this.$emit("search-click", event);
+        },
+        onInputKeydown(event) {
+            const key = event.which;
+
+            //escape, tab and enter
+            if (key === 27 || key === 9 || key === 13) {
+                // this.$store.dispatch('nav/onSearchHide', event);
+                // this.$emit("search-hide", event);
+            }
+        }
     }
 };
-const focusOnInput = () => {
-    searchInput.value.$el.focus();
-};
 </script>
-
-<template>
-    <Dialog
-        v-model:visible="layoutState.searchBarActive.value"
-        :style="{ width: '50vw' }"
-        :breakpoints="{ '992px': '75vw', '576px': '90vw' }"
-        :closeOnEscape="true"
-        :closable="false"
-        :dismissableMask="true"
-        :draggable="false"
-        :modal="true"
-        @show="focusOnInput()"
-        :pt="{
-            header: { class: 'hidden' },
-            content: { class: 'p-0 border-round-sm' }
-        }"
-    >
-        <div class="search-container">
-            <i class="pi pi-search"></i>
-            <InputText type="text" class="p-inputtext search-input" ref="searchInput" placeholder="Search" @keydown="onInputKeydown($event)" />
-        </div>
-    </Dialog>
-</template>

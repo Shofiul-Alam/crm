@@ -1,0 +1,15 @@
+.p-inputnumber-buttons-horizontal{
+    .p-inputnumber-input{
+        width: 35px!important;
+        padding: .2rem;
+        text-align: center;
+    }
+    .p-button{
+        background-color: transparent;
+        color: var(--d-menuitem-text-color);
+    }
+    .p-button-icon-only{
+        width: 2rem!important;
+    }
+}
+

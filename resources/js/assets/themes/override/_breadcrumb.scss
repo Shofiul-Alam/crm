@@ -1,0 +1,41 @@
+.layout-breadcrumb {
+    padding-bottom: 1.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    ol {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        gap: .5rem;
+
+
+        li {
+            font-weight: 400;
+            white-space: nowrap;
+            text-transform: none;
+            font-size: 1rem;
+            color: var(--surface-800);
+            &.current{
+                color: var(--text-color-secondary);
+            }
+        }
+    }
+}
+
+.content-breadcrumb {
+    margin-bottom: 2rem;
+    padding: 0 .5rem;
+}
+
+@media screen and (max-width: $breakpoint - 1) {
+    .layout-content{
+        .layout-breadcrumb {
+            flex-direction: column;
+        }
+    }
+
+}
