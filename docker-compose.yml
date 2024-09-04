@@ -1,7 +1,7 @@
 # For more information: https://laravel.com/docs/sail
 version: '3'
 services:
-  crm.laravel:
+  induction.laravel:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,8 +9,8 @@ services:
       args:
         WWWGROUP: '${ROOTGROUP}'
         XDEBUG_MODE: 'True'
-    image: crm.laravel
-    container_name: crm.laravel
+    image: induction.laravel
+    container_name: induction.laravel
     command:
       - /bin/bash
       - -c
@@ -28,19 +28,19 @@ services:
     networks:
       crm:
         aliases:
-          - crm.laravel
+          - induction.laravel
     depends_on:
-      - crm.mysql
-      - crm.redis
-  crm.worker:
+      - induction.mysql
+      - induction.redis
+  induction.worker:
     build:
       context: .
       dockerfile: Dockerfile
       target: cli
       args:
         WWWGROUP: '${WWWGROUP}'
-    image: crm.worker
-    container_name: crm.worker
+    image: induction.worker
+    container_name: induction.worker
     command:
     - /bin/bash
     - -c
@@ -57,20 +57,20 @@ services:
     networks:
       crm:
         aliases:
-          - crm.worker
+          - induction.worker
     depends_on:
-      - crm.laravel
-      - crm.mysql
-      - crm.redis
-  crm.cron:
+      - induction.laravel
+      - induction.mysql
+      - induction.redis
+  induction.cron:
     build:
       context: .
       dockerfile: Dockerfile
       target: cron
       args:
         WWWGROUP: '${WWWGROUP}'
-    image: crm.cron
-    container_name: crm.cron
+    image: induction.cron
+    container_name: induction.cron
     environment:
       WWWUSER: '${WWWUSER}'
       LARAVEL_SAIL: 1
@@ -80,13 +80,13 @@ services:
     networks:
       crm:
         aliases:
-          - crm.cron
+          - induction.cron
     depends_on:
-      - crm.web
-      - crm.mysql
-      - crm.redis
-  crm.web:
-    container_name: crm.web
+      - induction.web
+      - induction.mysql
+      - induction.redis
+  induction.web:
+    container_name: induction.web
     image: nginx:latest
     volumes:
       - './docker/nginx/nginx.template.conf:/etc/nginx/nginx.conf'
@@ -101,13 +101,13 @@ services:
     networks:
       crm:
         aliases:
-          - crm.web
+          - induction.web
     depends_on:
-      - crm.laravel
-      - crm.worker
-  crm.mysql:
+      - induction.laravel
+      - induction.worker
+  induction.mysql:
     image: 'mysql:8.0'
-    container_name: 'crm.mysql'
+    container_name: 'induction.mysql'
     ports:
       - '${FORWARD_DB_PORT:-3308}:3306'
     environment:
@@ -118,15 +118,15 @@ services:
       MYSQL_PASSWORD: '${DB_PASSWORD}'
     volumes:
       - 'crm_mysql_data:/var/lib/mysql'
-      - './docker/8.0/mysql.conf/app.cnf:/etc/mysql/conf.d/crm.cnf'
+      - './docker/8.0/mysql.conf/app.cnf:/etc/mysql/conf.d/induction.cnf'
     command: --sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     networks:
       - crm
     healthcheck:
       test: ["CMD", "mysqladmin", "ping"]
-  crm.mongo:
+  induction.mongo:
     image: mongo
-    container_name: crm.mongo
+    container_name: induction.mongo
     restart: always
     ports:
       - '${FORWARD_MONGO_PORT:-27019}:27017'
@@ -142,9 +142,9 @@ services:
       - './docker/mongo/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh'
     networks:
       - crm
-  crm.redis:
+  induction.redis:
     image: 'redis:alpine'
-    container_name: 'crm.redis'
+    container_name: 'induction.redis'
     ports:
       - '${FORWARD_REDIS_PORT:-6380}:6379'
     volumes:

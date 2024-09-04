@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import {CustomerService} from "@/modules/orders/services/CustomerService.js";
 import ActionButton from "../../../Components/Inputs/ActionButton.vue";
 
 const colorOptions = ref([
@@ -89,10 +88,10 @@ const formatCurrency = (value) => {
     if(!value) return;
     return value.toLocaleString('en-US', { style: 'currency', currency: 'BDT' });
 }
-CustomerService.getCustomersSmall().then((data) => {
-    products.value = getProducts(data);
-    loading.value = false;
-});
+// CustomerService.getCustomersSmall().then((data) => {
+//     products.value = getProducts(data);
+//     loading.value = false;
+// });
 
 const clickButton = () => {
     s.value.error = '';

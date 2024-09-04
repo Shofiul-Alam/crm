@@ -1,7 +1,7 @@
 import { toRefs, reactive, computed } from 'vue';
 
 const layoutConfig = reactive({
-    menuMode: 'overlay',
+    menuMode: 'static',
     colorScheme: 'light',
     theme: 'blue',
     scale: 14,

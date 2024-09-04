@@ -3,7 +3,7 @@
         <div class="topbar-left">
             <a v-ripple="{
                     pt: {
-                        root: { style: 'background: rgba(0,0,0, 0.3); transition: background-color 3s;' }
+                        root: { style: 'background: rgba(0,0,0, 0.2); transition: background-color 12s;' }
                     }
                 }"
                 class="menu-button p-trigger p-ripple  cursor-pointer" tabindex="0" @click="onMenuToggle">

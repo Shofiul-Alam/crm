@@ -75,7 +75,7 @@
         .p-carousel-prev,
         .p-carousel-next {
             @include action-icon();
-            margin: $inlineSpacing;
+            &{margin: $inlineSpacing};
         }
     }
 
@@ -85,7 +85,7 @@
         .p-carousel-indicator {
             margin-right: $inlineSpacing;
             margin-bottom: $inlineSpacing;
-           
+
             button {
                 background-color: $carouselIndicatorBg;
                 width: $carouselIndicatorWidth;

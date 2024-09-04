@@ -1,12 +1,15 @@
-import {createApp, defineAsyncComponent} from 'vue'
+import _ from 'lodash';
+import {Component, createApp, defineAsyncComponent} from 'vue'
 import router from './router'
 import { ModuleManager } from '@/share/types';
 import('@/assets/styles.scss');
 
 import moduleManager from '@/plugins/modules';
 import AppStateService from './services/AppStateService';
+import AuthModule from '@/modules/auth';
 import OrdersModule from '@/modules/orders';
 import ProductsModule from '@/modules/products';
+
 
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -20,9 +23,9 @@ import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import ActionButton from "@/Components/Inputs/ActionButton.vue";
-import InputSwitch from "primevue/InputSwitch";
-import RadioButton from "primevue/RadioButton";
-import Checkbox from "primevue/Checkbox";
+import InputSwitch from "@node/primevue/inputswitch/InputSwitch.vue";
+import RadioButton from "@node/primevue/radiobutton/RadioButton.vue";
+import Checkbox from "@node/primevue/checkbox/Checkbox.vue";
 import InputIcon from "primevue/inputicon";
 import IconField from "primevue/iconfield";
 import Column from "primevue/column";
@@ -40,6 +43,7 @@ import AutoComplete from "primevue/autocomplete";
 import Tooltip from 'primevue/tooltip';
 import Card from "primevue/card";
 import SplitButton from "primevue/splitbutton";
+import Password from "@node/primevue/password";
 
 
 const DataTable = defineAsyncComponent(() => import("primevue/datatable")) ;
@@ -56,13 +60,15 @@ const DatatableCrudWithFilters = defineAsyncComponent(() => import("@/Components
 const app = createApp({});
 app.use(moduleManager, {
     modules: [
+        AuthModule,
         OrdersModule,
         ProductsModule
     ],
     services: [
 
     ],
-    router
+    router,
+    config: {locale: {locale: "", fallbackLocale: ""}}
 } as ModuleManager);
 app.use(AppStateService);
 app.use(PrimeVue, { ripple: true });
@@ -76,6 +82,7 @@ app.directive('badge', BadgeDirective);
 app.directive('styleclass', StyleClass);
 
 app.component('Toast', Toast);
+app.component('Password', Password);
 app.component('InputText', InputText);
 app.component('Dropdown', Dropdown);
 app.component('Button', Button);
@@ -114,10 +121,16 @@ app.component('DatatableCrudWithFilters', DatatableCrudWithFilters);
 
 
 const layouts = import.meta.glob("./layout/**/*.vue");
+const pages = import.meta.glob("./pages/**/*.vue");
+const vueComponents = _.merge({}, layouts, pages);
 
-Object.entries(layouts).forEach(([path, definition]) => {
-    const componentName = path.split('/').pop().replace(/\.\w+$/, '');
-    app.component(componentName, defineAsyncComponent(definition));
+Object.entries(vueComponents).forEach(([path, definition]) => {
+    if (path) {
+        const componentName = path.split('/').pop()?.replace(/\.\w+$/, '');
+        if (componentName) {
+            app.component(componentName, defineAsyncComponent(async () => <Component> await definition()));
+        }
+    }
 });
 
 app.mount('#app');

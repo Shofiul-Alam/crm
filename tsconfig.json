@@ -14,18 +14,24 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
+    "allowJs": true,
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./resources/js/*"],
-      "@/node/*": ["./node_modules/*"],
+      "@/*": ["resources/js/*"],
+      "@node/*": ["node_modules/*"]
     },
     "types": ["vite/client"]
   },
-  "include": ["@/**/*.ts", "@/**/*.tsx", "@/**/*.vue"],
+  "include": [
+      "resources/js/**/*.ts",
+      "resources/js/**/*.tsx",
+      "resources/js/**/*.vue"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

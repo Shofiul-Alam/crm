@@ -15,7 +15,8 @@ export default {
     }: ModuleManager): void => {
 
         const additionalServices: ComponentOptionsMixin[] = [];
-        let messages = {};
+        // let messages = {};
+        console.log(config);
 
         // init modules
         for (const module of modules) {
@@ -75,7 +76,11 @@ const addComponents = (app: App, module: ModuleDeclaration): void => {
     if (!module.components) return;
 
     for (const component of module.components) {
-        // add Module components
-        app.component(component.name, component)
+        if(typeof component.name === 'string'){
+            // add Module components
+            app.component(component.name, component)
+        } else {
+            console.warn("Component name is undefined");
+        }
     }
 }

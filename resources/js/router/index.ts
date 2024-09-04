@@ -1,11 +1,10 @@
 import { RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
-import AppHome from "@/pages/AppHome.vue";
 
 const routes: Array<RouteRecordRaw>  = [
     {
         path: '/',
         name: 'app-home',
-        component: AppHome,
+        component: () => import("@/pages/Dashboard.vue"),
         meta:{
             title: 'Dashboard',
             breadcrumb: [

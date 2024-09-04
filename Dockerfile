@@ -87,8 +87,8 @@ WORKDIR /opt/apps/laravel-in-kubernetes
 # We want to install all the NPM packages,
 # and compile the MIX bundle for production
 # RUN npm install --save-dev webpack-cli
-RUN npm install && \
-    npm run build
+#RUN npm install && \
+#    npm run build
 
 
 #--------------------------------Frontend End here--------------------------------------------

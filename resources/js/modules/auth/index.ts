@@ -1,0 +1,13 @@
+import ModulePage from './AuthModule.vue';
+import { routes } from './routes';
+import { ModuleDeclaration } from '@/share/types';
+
+
+export default {
+    name: 'module-auth',
+    basePath: '/',
+    component: ModulePage,
+    components:[],
+    locales: {},
+    routes,
+} as ModuleDeclaration;

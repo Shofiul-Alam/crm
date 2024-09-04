@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import {computed, watch} from "vue";
+import {computed} from "vue";
 
 const props = defineProps({
     icon: String,
